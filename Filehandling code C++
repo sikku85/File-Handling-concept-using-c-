@@ -1,0 +1,223 @@
+#include<iostream>
+#include<fstream>
+#include<string>
+#include<conio.h>
+#include<stdio.h>
+
+using namespace std;
+class student
+{
+  private: 
+  char  name[20];
+  int  roll;
+  char section;
+  public:
+  student()
+  {
+  	strcpy(name,"no name");
+  	roll=0;
+  	section='A';
+  }
+
+  void studentdata();
+  void showdata();
+  void writedata();
+  void readdata();
+  void searchdata(char *);
+  void deletedata(char *);
+  void updatedata(char *);
+  void rolldata();
+};
+
+
+
+
+void student::rolldata()
+{
+	int c;
+ char k;
+	cout<<"entre new roll no. "<<endl;
+	cin>>c;
+ cout<<"entre Yur new Section"<<endl;
+  cin>>k;
+	roll=c;
+ section=k;
+    cout<<endl;
+}
+void student::studentdata()
+{
+	cout<<"entre name of the student"<<endl;
+	cin.ignore();
+	cin.getline(name,19);
+	cout<<"roll No. of the student "<<endl;
+	cin>>roll;
+	cout<<"entre section of the student "<<endl;
+	cin>>section;
+}
+void student ::showdata()
+{
+	cout<<name<<"     "<<roll<<"     "<<section<<endl;
+}
+void student::writedata()
+{
+	student s1;
+	s1.studentdata();
+	ofstream fout;
+	fout.open("student.txt", ios::app);
+	fout.write((char *)&s1,sizeof(s1));
+	fout.close();
+}
+void student::readdata()
+{
+	student s1;
+	ifstream fin;
+	fin.open("student.txt",ios::in);
+	fin.read((char *)&s1,sizeof(s1));
+	while(! fin.eof())
+	{
+	s1.showdata();
+	fin.read((char *)&s1,sizeof(s1));
+	}fin.close();
+ cout<<"****-----------------------*****"<<endl;   
+	
+}
+
+void student::searchdata(char *t)
+{
+	ifstream fin;
+	int found=0;
+	fin.open("student.txt",ios::in);
+	fin.read((char *)this,sizeof(*this));
+	while(! fin.eof())
+	{
+		if(!strcmp(t,name))
+		{cout<<"Yes we found"<<endl;
+			showdata();
+			found=1;
+		}
+		fin.read((char *)this,sizeof(*this));
+		}
+	if(found==0) { cout<<"** sorry We Have no Record this Student  **"<<endl<<"--- -------------  ----------- -----"<<endl;  }
+		fin.close();
+}
+void student::deletedata(char *t)
+{
+	ifstream fin;
+	ofstream fout;
+	fin.open("student.txt",ios::in);
+	fout.open("temp.txt",ios::app);
+	fin.read((char *)this,sizeof(*this));
+	while(!fin.eof())
+	{
+		if(strcmp(t,name))
+		
+	{	fout.write((char *)this,sizeof(*this));}else{showdata();cout<<"*******-----------********"<<endl;}
+		fin.read((char *)this,sizeof(*this));  
+		
+	}
+	fin.close();
+	fout.close();
+	remove("student.txt");
+	rename("temp.txt","student.txt");
+	cout<<"record deleted"<<endl;
+
+
+}
+void student ::updatedata(char *t)
+{
+	fstream file;
+	file.open("student.txt",ios::in | ios::out | ios::ate);
+	file.seekg(0);
+	file.read((char *)this,sizeof(*this));
+		while(!file.eof())
+		{
+			if(!strcmp(t,name))
+			{
+				cout<<"student record found"<<endl<<"********Heat entre To continue****"<<endl;
+			getch();
+			
+				rolldata();
+		file.seekg(file.tellp() -sizeof(*this));
+				file.write((char *)this,sizeof(*this));      }
+			file.read((char *)this,sizeof(*this));
+			
+		}
+    cout<<"UPDATE SUCESSFULL"<<endl;
+    cout<<"Yur new roll & section are "<<endl;
+    showdata();
+    cout<<"*********__________**********"<<endl;
+	
+}
+
+
+int main()
+{
+	student s1;
+	int choice;
+	do{
+		cout<<"1.    storing name of the student"<<endl;
+		cout<<"2.    view all student "<<endl;
+		cout<<"3.    search student detailed"<<endl;
+		cout<<"5.    delete student record"<<endl;
+		cout<<"6.    update record Data of The student "<<endl;
+		cout<<"4.    EXIT "<<endl;
+		cin>>choice;
+		switch(choice)
+		{
+			case 1:
+			{
+    char x;
+    do{
+				s1.writedata();
+		  	cout<<"Yur data store SUCESSFULLY"<<endl<<endl;
+    cout<<"Want To store more student imfo .[Y or N]  "<<endl;
+    cin>>x;}while(x=='Y' || x=='y');
+                        
+				break;
+			}
+			case 2:
+			{
+			s1.readdata();
+   getch();
+				break;
+			}
+			case 3:
+			{
+				cout<<"entre name of the student Yu are searching "<<endl;
+				char x[20];
+				cin.ignore();
+			   cin.getline(x,19);
+				s1.searchdata(x);
+				break;
+			}
+			case 4:
+			{
+				cout<<"Thank Yu for Using "<<endl;
+				break;
+			}
+			case 5:
+			{
+				char x[20];
+				cout<<"Entre student name -- "<<endl;
+				cin.ignore();
+				cin.getline(x,19);
+				s1.deletedata(x);
+				break;
+			}
+			case 6:
+			{
+				cout<<"Entre The name of the student Yu want To update "<<endl;
+				char x[20];
+				cin.ignore();
+				cin.getline(x,19);
+				s1.updatedata(x);	
+				break;
+			}
+   default: 
+            {
+                cout<<"invalid option Yu selected"<<endl<<"Thank Yu"<<endl;
+            }
+     }
+			
+		}while(choice!=4);
+}
